@@ -1,3 +1,4 @@
+#Code for generating data is motified version of: Airfoil from Joukowski-airfoil-rotation-online.ipynb
 #!pip install plotly
 import plotly.graph_objects as go
 import numpy as np
