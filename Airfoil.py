@@ -1,26 +1,24 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Airfoil from Joukowski-airfoil-rotation-online.ipynb
+# # Airfoil based on  Joukowski-airfoil-rotation-online.ipynb
+# Code is also based on Jupyter Notebook with images given in pdf format in the repo
 
-# In[1]:
 
-
-#!pip install plotly
 import plotly.graph_objects as go
 import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
 
 
-# In[2]:
+
 
 
 def J(z, lam, alpha):
     return z+(np.exp(-1j*2*alpha)*lam**2)/z
 
 
-# In[3]:
+
 
 
 def circle(C, R):
@@ -28,19 +26,18 @@ def circle(C, R):
     return C + R*np.exp(1j*t)
 
 
-# In[4]:
+
 
 
 def deg2radians(deg):
     return deg*np.pi/180
 
 
-# In[5]:
+
 
 
 def flowlines1(alpha=11, beta=5, V_inf=1, R=5, ratio=1.2):
-    #alpha, beta are given in degrees
-    #ratio =R/lam
+
     alpha = deg2radians(alpha)# angle of attack
     beta = deg2radians(beta)# -beta is the argument of the complex no (Joukowski parameter - circle center)
     if ratio <= 1: #R/lam must be >1
@@ -60,7 +57,7 @@ def flowlines1(alpha=11, beta=5, V_inf=1, R=5, ratio=1.2):
     w = J(z, lam, alpha)
     beta = beta+alpha
     Z = z-center_c #Also known as in paper, z'=z-zo
-    #print(Z)
+    
     Gamma = -4*np.pi*V_inf*R*np.sin(beta)#circulation
     U = np.zeros(Z.shape, dtype=np.complex)
     with np.errstate(divide='ignore'):#
@@ -73,13 +70,11 @@ def flowlines1(alpha=11, beta=5, V_inf=1, R=5, ratio=1.2):
     return w, c_flow.imag, Airfoil
 
 
-# In[6]:
 
 
 #PRACTICE WITH NEW FLOWLINES
 def flowlines(alpha=25, beta=5, V_inf=1, R=1, ratio=1.2):
-    #alpha, beta are given in degrees
-    #ratio =R/lam
+   
     alpha = deg2radians(alpha)# angle of attack
     beta = deg2radians(beta)# -beta is the argument of the complex no (Joukowski parameter - circle center)
     if ratio <= 1: #R/lam must be >1
@@ -101,15 +96,10 @@ def flowlines(alpha=25, beta=5, V_inf=1, R=1, ratio=1.2):
     t = -1.757745+0.03484753j
     T = t -center_c
     Z = z-center_c
-    #ZV = z-center_c + .01j
-    #print(Z)
-    #print("This is ZV",ZV)
+ 
     Gamma = -4*np.pi*V_inf*R*np.sin(beta)#circulation
     U = np.zeros(Z.shape, dtype= complex)
-    #UK = Gamma*np.log((T)/R)/(2*np.pi)
-    #ck_flow = V_inf*T + (V_inf*R**2)/T - 1j*UK #the complex flow
-    #print("This is ck_flow:",ck_flow)
-    #print("This is velocity:",UK)
+
     with np.errstate(divide='ignore'):#
         for m in range(Z.shape[0]):
             for n in range(Z.shape[1]):# due to this numpy bug https://github.com/numpy/numpy/issues/8516
@@ -121,11 +111,10 @@ def flowlines(alpha=25, beta=5, V_inf=1, R=1, ratio=1.2):
     
     v_components = (V_inf*(1-((R**2)/(((R*np.exp(-1j*beta)**2)**2))))-(1j*Gamma)/(2*np.pi*(R*np.exp(-1j*beta)**2)))*np.exp(-1j*alpha)*(1-((lam**2)/(z**2)))**(-1)
     # Change above equation to vary the h-value or height and choose a few of them to expand the data
-    #print("Velocity components:",v_components)
+    
     return w, c_flow.imag,  Airfoil
 
 
-# In[7]:
 
 
 def get_contours(mplcont):
@@ -145,7 +134,6 @@ def get_contours(mplcont):
     return xline, yline
 
 
-# In[8]:
 
 
 levels = np.arange(-3, 3.7, 0.25).tolist()
@@ -172,7 +160,7 @@ for k, alpha in enumerate(Alpha):
                         ) )
 
 
-# In[9]:
+
 
 
 data = [go.Scatter( 
@@ -262,31 +250,21 @@ layout.update(sliders=get_sliders(Alpha, len(frames), fr_duration=50))
 fig = go.Figure(data=data,layout=layout, frames=frames)
 
 
-# In[12]:
-
 
 #!pip install chart_studio
 import chart_studio.plotly as py
 import pandas as pd
-#py.iplot(fig, filename='streamlJouk1485353936.44' )
-#fig, filename='streamlJouk1485353936.44'.show()
+
 fig.show(filename='streamlJouk1485353936.44')
-#Aggressive goals 
-#Add h-distance points
-#difference mesh densities, radius, camber, and angle of attack, etc
 
 
-# ## Repeat Flowlines analysis and add velocity components around the airfoil
 
-# In[29]:
 
 
 # using flowlines architechture for setup
 import pandas as pd
 def flowlines2(alpha1=15, beta1=5, V_inf1=1, R1=1, ratio1=1.2):
 
-    #alpha, beta are given in degrees
-    #ratio =R/lam
     alpha1 = deg2radians(alpha1)# angle of attack
     beta1 = deg2radians(beta1)# -beta is the argument of the complex no (Joukowski parameter - circle center)
     if ratio1 <= 1: #R/lam must be >1
@@ -330,24 +308,14 @@ def flowlines2(alpha1=15, beta1=5, V_inf1=1, R1=1, ratio1=1.2):
     norms_denom = (np.linalg.norm(v_components1.real+img2))
     #print(img2)
     norms_better = ((v_components1.real)/(np.linalg.norm(v_components1.real)))
-    #print("j_normal comp",(-v_components1[0])/(np.linalg.norm(v_components1)))
-    #print(v_components1.real[3])
-    #print(norms_better.shape)
-    #SF = pd.DataFrame(norms_denom)
-    #SF.to_csv("norms_denom__2D_R1.5_h_0.csv")
+
     PDF = pd.DataFrame(v_components1.real)
     PDF.to_csv("2D__Comps_r1_00h.3.real")
     PDFz = pd.DataFrame(v_components1.imag)
     PDFz.to_csv("2D__Comps_r1_00h.3.imag")
-    #norms.tofile('data2.csv')
-    #DF1 = pd.DataFrame(norms)
-    #DF1.to_csv("Norms1")
-    #print(norms.size)
-    #print(type(v_components1.real))
+
     return w1, c_flow1.imag,  Airfoil1
 
-
-# In[30]:
 
 
 import pandas as pd
@@ -374,27 +342,6 @@ for k, alpha1 in enumerate(Alpha1):
                          name=f'frame{k}'  
                         ) )
 
-
-# In[16]:
-
-
-# Pick up pace!
-# Include both components to normal and finite h.
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 
